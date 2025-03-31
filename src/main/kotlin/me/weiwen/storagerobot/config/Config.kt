@@ -42,6 +42,11 @@ data class Config(
         Key.key("pink_shulker_box"),
     ),
 
+    @SerialName("blacklisted-items")
+    var blacklistedItems: Set<Key> = setOf(
+        Key.key("ender_chest"),
+    ),
+
     var messages: Messages = Messages(),
 )
 

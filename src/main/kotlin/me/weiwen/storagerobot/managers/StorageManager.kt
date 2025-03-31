@@ -7,6 +7,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.Tag
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.block.Block
@@ -53,13 +54,32 @@ object StorageManager {
                 it.first.matches(item, true) && it.second == block
             }
             if (i == -1) {
-                mergedItems += item to block
+                mergedItems += item.clone() to block
                 continue
             }
             mergedItems[i] = mergedItems[i].first.apply { amount += item.amount } to mergedItems[i].second
         }
         return mergedItems
             .groupBy({ it.second }, { it.first })
+    }
+
+    fun search(player: Player, query: String, radius: Int = 20): Map<Block, List<ItemStack>> {
+        val containers = containersInRadius(player.location, radius)
+            .filter { it.isTrusted(player) }
+
+        val found = mutableListOf<Pair<ItemStack, Block>>()
+
+        val query = query.lowercase()
+
+        for (container in containers) {
+            val items = container.inventory
+                .filterNotNull()
+                .filter { !it.isEmpty && PlainTextComponentSerializer.plainText().serialize(it.effectiveName()).lowercase().contains(query) }
+                .map { it to container.block }
+            found.addAll(items)
+        }
+
+        return mergeItems(found)
     }
 
     fun search(player: Player, item: ItemStack, radius: Int = 20): Map<Block, List<ItemStack>> {
@@ -83,7 +103,10 @@ object StorageManager {
             .filter { plugin.config.allowedContainers.contains(it.block.type.key) }
             .filter { it.isTrusted(player) }
 
-        var toStore = player.inventory.storageContents.filterNotNull().filter { !it.isEmpty }.toList()
+        var toStore = player.inventory.storageContents
+            .filterNotNull()
+            .filter { !it.isEmpty && !plugin.config.blacklistedItems.contains(it.type.key()) }
+            .toList()
         val stored = mutableListOf<Pair<ItemStack, Block>>()
 
         for (container in containers) {
