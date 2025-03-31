@@ -75,6 +75,8 @@ fun ItemStack.matches(other: ItemStack, ignoreAmount: Boolean): Boolean {
     if (getData(DataComponentTypes.CUSTOM_NAME) != other.getData(DataComponentTypes.CUSTOM_NAME)) return false
     if (getData(DataComponentTypes.CUSTOM_MODEL_DATA) != other.getData(DataComponentTypes.CUSTOM_MODEL_DATA)) return false
     if (getData(DataComponentTypes.ITEM_MODEL) != other.getData(DataComponentTypes.ITEM_MODEL)) return false
+    if (getData(DataComponentTypes.CONTAINER) != other.getData(DataComponentTypes.CONTAINER)) return false
+    if (getData(DataComponentTypes.BUNDLE_CONTENTS) != other.getData(DataComponentTypes.BUNDLE_CONTENTS)) return false
 
     return true
 }
