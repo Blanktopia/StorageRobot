@@ -8,6 +8,7 @@ import org.bukkit.entity.*
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
+import kotlin.math.absoluteValue
 
 object HighlightManager {
     val displays: MutableMap<Player, MutableMap<Location, ArrayDeque<Display>>> = mutableMapOf()
@@ -46,12 +47,14 @@ object HighlightManager {
             transformation = Transformation(
                 transformation.translation,
                 transformation.leftRotation,
-                Vector(1.0, 1.0, 1.0).subtract(facing.direction).multiply(0.5).toVector3f(),
+                Vector(1.0, 1.0, 1.0).subtract(
+                    Vector(
+                        facing.direction.x.absoluteValue,
+                        facing.direction.y.absoluteValue,
+                        facing.direction.z.absoluteValue,
+                    )
+                ).multiply(0.5).toVector3f(),
                 transformation.rightRotation,
-            )
-            setRotation(
-                (Math.atan2(facing.direction.x, facing.direction.z) / Math.PI * 180).toFloat(),
-                if (facing == BlockFace.DOWN) -90f else if (facing == BlockFace.UP) 90f else 0f,
             )
         }
         player.showEntity(plugin, display)
