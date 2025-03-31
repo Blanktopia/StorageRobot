@@ -4,8 +4,7 @@ import dev.jorel.commandapi.*
 import dev.jorel.commandapi.arguments.GreedyStringArgument
 import dev.jorel.commandapi.executors.CommandArguments
 import dev.jorel.commandapi.executors.CommandExecutor
-import dev.jorel.commandapi.kotlindsl.commandTree
-import dev.jorel.commandapi.kotlindsl.playerExecutor
+import dev.jorel.commandapi.kotlindsl.*
 import me.weiwen.storagerobot.StorageManager.sendMessage
 import me.weiwen.storagerobot.config.Config
 import me.weiwen.storagerobot.config.parseConfig
@@ -32,7 +31,7 @@ class StorageRobot : JavaPlugin(), WebSocket.Listener {
     override fun onLoad() {
         plugin = this
 
-        CommandAPI.onLoad(CommandAPIBukkitConfig(plugin))
+        CommandAPI.onLoad(CommandAPIBukkitConfig(plugin).usePluginNamespace())
     }
 
     override fun onEnable() {
@@ -50,16 +49,6 @@ class StorageRobot : JavaPlugin(), WebSocket.Listener {
     }
 
     fun registerCommands() {
-        CommandAPICommand("broadcastmsg")
-            .withArguments(GreedyStringArgument("message")) // The arguments
-            .withAliases("broadcast", "broadcastmessage") // Command aliases
-            .withPermission(CommandPermission.OP) // Required permissions
-            .executes(CommandExecutor { sender: CommandSender?, args: CommandArguments ->
-                val message = args["message"] as String?
-                Bukkit.getServer().broadcastMessage(message!!)
-            })
-            .register()
-
         commandTree("store") {
             withPermission("storagerobot.store")
             playerExecutor { sender, _ ->
@@ -70,7 +59,12 @@ class StorageRobot : JavaPlugin(), WebSocket.Listener {
         commandTree("search") {
             withPermission("storagerobot.search")
             playerExecutor { sender, _ ->
-                searchCommand(sender)
+                searchCommand(sender, null)
+            }
+            greedyStringArgument("query") {
+                playerExecutor { sender, args ->
+                    searchCommand(sender, args["query"] as String)
+                }
             }
         }
 
@@ -92,9 +86,14 @@ class StorageRobot : JavaPlugin(), WebSocket.Listener {
 
     private fun searchCommand(
         player: Player,
+        query: String?
     ) {
-        val item = player.inventory.itemInMainHand
-        val found = StorageManager.search(player, item)
+        val found = if (query != null) {
+            StorageManager.search(player, query)
+        } else {
+            val item = player.inventory.itemInMainHand
+            StorageManager.search(player, item)
+        }
         sendMessage(player, found)
         clearDisplays(player)
         for ((block, items) in found) {
