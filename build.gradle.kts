@@ -30,11 +30,11 @@ dependencies {
     implementation("com.charleskorn.kaml:kaml:0.72.0")
 
     // Paper
-    compileOnly("org.purpurmc.purpur", "purpur-api", "1.21.4-R0.1-SNAPSHOT")
+    compileOnly("org.purpurmc.purpur", "purpur-api", "1.21.5-R0.1-SNAPSHOT")
 
     // CommandAPI
-    implementation("dev.jorel:commandapi-bukkit-shade:9.7.0")
-    implementation("dev.jorel:commandapi-bukkit-kotlin:9.7.0")
+    compileOnly("dev.jorel:commandapi-bukkit-core:10.0.1")
+    compileOnly("dev.jorel:commandapi-bukkit-kotlin:10.0.1")
 
     // bStats
     implementation("org.bstats", "bstats-bukkit", "1.8")

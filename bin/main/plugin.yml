@@ -1,0 +1,7 @@
+name: StorageRobot
+version: 1.0.0
+main: me.weiwen.storagerobot.StorageRobot
+description: Automatically sort inventory items into matching containers.
+author: Goh Wei Wen <goweiwen@gmail.com>
+website: weiwen.me
+api-version: 1.21.4
