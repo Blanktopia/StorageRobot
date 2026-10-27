@@ -30,15 +30,12 @@ class StorageRobot : JavaPlugin(), WebSocket.Listener {
 
     override fun onLoad() {
         plugin = this
-
-        CommandAPI.onLoad(CommandAPIBukkitConfig(plugin).usePluginNamespace())
     }
 
     override fun onEnable() {
         config = parseConfig(this)
 //        metrics = Metrics(this, 15850)
 
-        CommandAPI.onEnable();
         registerCommands()
 
         logger.info("StorageRobot is enabled")

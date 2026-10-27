@@ -33,8 +33,8 @@ dependencies {
     compileOnly("org.purpurmc.purpur", "purpur-api", "26.3.build.2654-stable")
 
     // CommandAPI
-    compileOnly("dev.jorel:commandapi-bukkit-core:10.0.1")
-    compileOnly("dev.jorel:commandapi-bukkit-kotlin:10.0.1")
+    compileOnly("dev.jorel:commandapi-paper-core:12.1.0")
+    compileOnly("dev.jorel:commandapi-kotlin-paper:12.1.0")
 
     // bStats
     implementation("org.bstats", "bstats-bukkit", "1.8")
@@ -48,6 +48,8 @@ bukkit {
     apiVersion = "26.3"
     author = "Goh Wei Wen <goweiwen@gmail.com>"
     website = "weiwen.me"
+
+    depend = listOf("CommandAPI")
 }
 
 tasks.withType<KotlinCompile> {
