@@ -30,7 +30,7 @@ dependencies {
     implementation("com.charleskorn.kaml:kaml:0.104.0")
 
     // Paper
-    compileOnly("org.purpurmc.purpur", "purpur-api", "1.21.5-R0.1-SNAPSHOT")
+    compileOnly("org.purpurmc.purpur", "purpur-api", "26.3.build.2654-stable")
 
     // CommandAPI
     compileOnly("dev.jorel:commandapi-bukkit-core:10.0.1")
@@ -45,7 +45,7 @@ bukkit {
     name = "StorageRobot"
     version = project.version.toString()
     description = "Automatically sort inventory items into matching containers."
-    apiVersion = "1.21.4"
+    apiVersion = "26.3"
     author = "Goh Wei Wen <goweiwen@gmail.com>"
     website = "weiwen.me"
 }
