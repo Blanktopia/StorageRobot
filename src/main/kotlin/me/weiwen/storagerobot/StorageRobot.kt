@@ -47,6 +47,7 @@ class StorageRobot : JavaPlugin(), WebSocket.Listener {
 
     fun registerCommands() {
         commandTree("store") {
+            withAliases("unload", "ul")
             withPermission("storagerobot.store")
             playerExecutor { sender, _ ->
                 storeCommand(sender)
