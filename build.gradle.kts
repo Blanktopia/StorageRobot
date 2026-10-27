@@ -4,10 +4,10 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.1.10"
-    kotlin("plugin.serialization") version "2.1.10"
+    kotlin("jvm") version "2.4.21"
+    kotlin("plugin.serialization") version "2.4.21"
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
-    id("io.github.goooler.shadow") version "8.1.7"
+    id("com.gradleup.shadow") version "9.6.1"
 }
 
 repositories {
@@ -27,7 +27,7 @@ repositories {
 
 dependencies {
     compileOnly(kotlin("stdlib"))
-    implementation("com.charleskorn.kaml:kaml:0.72.0")
+    implementation("com.charleskorn.kaml:kaml:0.104.0")
 
     // Paper
     compileOnly("org.purpurmc.purpur", "purpur-api", "1.21.5-R0.1-SNAPSHOT")
@@ -51,7 +51,7 @@ bukkit {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.freeCompilerArgs = listOf("-opt-in=kotlinx.serialization.ExperimentalSerializationApi")
+    compilerOptions.freeCompilerArgs.set(listOf("-opt-in=kotlinx.serialization.ExperimentalSerializationApi"))
 
     sourceSets.main {
         java.srcDirs("src/main/kotlin")
