@@ -1,6 +1,7 @@
 package me.weiwen.storagerobot
 
 import me.weiwen.storagerobot.StorageRobot.Companion.plugin
+import io.papermc.paper.datacomponent.DataComponentTypes
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -17,9 +18,26 @@ import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
 object StorageManager {
+    private fun String.normalized(): String = lowercase().filterNot { it.isWhitespace() }
+
+    private fun Component.normalized(): String = PlainTextComponentSerializer.plainText().serialize(this).normalized()
+
+    private fun Inventory.itemsWithShulkerContents(): List<ItemStack> =
+        filterNotNull()
+            .flatMap { listOf(it) + (it.getData(DataComponentTypes.CONTAINER)?.contents() ?: emptyList()) }
+            .filter { !it.isEmpty }
+
+    private fun ItemStack.matchesQuery(query: String): Boolean {
+        val enchantments = enchantments.keys +
+            (getData(DataComponentTypes.STORED_ENCHANTMENTS)?.enchantments()?.keys ?: emptySet())
+        return effectiveName().normalized().contains(query) ||
+            enchantments.any { it.description().normalized().contains(query) }
+    }
+
     private fun containersInRadius(location: Location, radius: Int): List<Container> {
         val minChunkX = Math.floorDiv(location.blockX - radius, 16)
         val maxChunkX = Math.floorDiv(location.blockX + radius, 16)
@@ -69,12 +87,11 @@ object StorageManager {
 
         val found = mutableListOf<Pair<ItemStack, Block>>()
 
-        val query = query.lowercase()
+        val query = query.normalized()
 
         for (container in containers) {
-            val items = container.inventory
-                .filterNotNull()
-                .filter { !it.isEmpty && PlainTextComponentSerializer.plainText().serialize(it.effectiveName()).lowercase().contains(query) }
+            val items = container.inventory.itemsWithShulkerContents()
+                .filter { it.matchesQuery(query) }
                 .map { it to container.block }
             found.addAll(items)
         }
@@ -89,7 +106,7 @@ object StorageManager {
         val found = mutableListOf<Pair<ItemStack, Block>>()
 
         for (container in containers) {
-            if (container.inventory.filterNotNull().filter { !it.isEmpty }.any { it.matches(item, true) }) {
+            if (container.inventory.itemsWithShulkerContents().any { it.matches(item, true) }) {
                 found.add(item to container.block)
                 continue
             }
